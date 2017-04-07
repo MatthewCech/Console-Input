@@ -111,7 +111,7 @@ int GetChar(void)
 
   // Configure newTermios
   tcgetattr(STDIN_FILENO, &oldTermios);
-  newTermios = oldt;
+  newTermios = oldTermios;
   newTermios.c_lflag &= ~(ICANON | ECHO);
   tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
 
