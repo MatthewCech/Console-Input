@@ -9,15 +9,15 @@ local ROOT         = "../"          -- Path to project root
 
 
 -- [ WORKSPACE CONFIGURATION ] --
-workspace "ConsoleInput"                     -- Solution Name
+workspace "Console Input"                    -- Solution Name
     configurations { "Debug", "Release"}     -- Optimization/General config mode in VS
     platforms { "x64", "x86"}                -- Dropdown platforms section in VS
     location (ROOT .. "project_" .. _ACTION) -- Note: _ACTION is the argument passed to premake.
 
     -- [ PROJECT CONFIGURATION ] --
-    project "console-input"        -- Project name
-        targetname "console-input" -- Executable name
-        kind "ConsoleApp"          -- Style of app in project- WindowedApp, ConsoleApp, etc.
+    project "console-input"                -- Project name
+        targetname "console-input-testing" -- Executable name
+        kind "ConsoleApp"                  -- Style of app in project- WindowedApp, ConsoleApp, etc.
         language "C++"
 
     -- [ COMPILER/LINKER CONFIG] --
@@ -65,11 +65,12 @@ workspace "ConsoleInput"                     -- Solution Name
     local output_dir_root         = ROOT .. "bin_%{cfg.platform}_%{cfg.buildcfg}_" .. _ACTION
     targetdir(output_dir_root)    -- Where all output files are stored
     local source_dir_root         = ROOT .. "Source"
-    local source_dir_includes     = ROOT .. "External" .. "/**/Includes"
 
     -- Files to be compiled (cpp) or added to project (visual studio)
     files
     {
+      source_dir_root .. "/**.c",
+      source_dir_root .. "/**.h",
       source_dir_root .. "/**.cpp",
       source_dir_root .. "/**.hpp",
       source_dir_root .. "/**.tpp",
