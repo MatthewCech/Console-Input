@@ -25,7 +25,7 @@ int main(int argc, char** argv)
       while (num--)
       {
         int lastCode = GetChar();
-        std::cout << "Read Chars: " << static_cast<int>(lastCode);
+        std::cout << "Read Code: " << lastCode << ", Char: " << static_cast<char>(lastCode);
 
         if (lastCode == KEY_ESCAPE)
           return 0;
