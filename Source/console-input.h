@@ -15,14 +15,37 @@ windows and linux! Relevant functions are KeyHit() and GetKey().
   #define OS_NON_WINDOWS
 #endif
 
-// A few common non-ascii keys - code validity not guarenteed.
-#define KEY_ESCAPE    27
+
+  /////////////////////
+ // Keycode Defines //
+/////////////////////
+// You can compare output to characters mostly, however some
+// keys are a bit harder to type - I've throw a few keycodes
+// here, although note that accuracy may vary between systems.
 #define KEY_BACKSPACE 8
 #define KEY_TAB       9
 #define KEY_ENTER     13
 #define KEY_RETURN    13
+#define KEY_ESCAPE    27
+#define KEY_SPACE     32
 
-int KeyHit(void); // Returns truthy if a key was hit.
+// ASCII readable but inconvenient sometimes.
+#define KEY_NUM_0 48
+#define KEY_NUM_1 49
+#define KEY_NUM_2 50
+#define KEY_NUM_3 51
+#define KEY_NUM_4 52
+#define KEY_NUM_5 53
+#define KEY_NUM_6 54
+#define KEY_NUM_7 55
+#define KEY_NUM_8 56
+#define KEY_NUM_9 57
+
+
+  /////////////////////////
+ // Function Prototypes //
+/////////////////////////
+int KeyHit(void);  // Returns truthy if a key was hit.
 int GetChar(void); // Retrieves the last key value pressed.
 
 
@@ -35,12 +58,13 @@ int GetChar(void); // Retrieves the last key value pressed.
 
 int KeyHit(void)  { return _kbhit();  }
 int GetChar(void) { return _getwch();  }
+
 #endif
 
 
-
-/////////////////////
-//
+  ////////////////////////////////
+ // Non-Windows Implementation //
+////////////////////////////////
 #ifdef OS_NON_WINDOWS
 // System includes, mostly kbhit emulation
 #include <sys/ioctl.h>
@@ -51,7 +75,6 @@ int GetChar(void) { return _getwch();  }
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
-
 
 int KeyHit(void)
 {
