@@ -23,7 +23,13 @@ int main(int argc, char** argv)
     if (int num = KeyHit())
     {
       while (num--)
-        std::cout << "Read Chars: " << static_cast<int>(GetChar());
+      {
+        int lastCode = GetChar();
+        std::cout << "Read Chars: " << static_cast<int>(lastCode);
+
+        if (lastCode == KEY_ESCAPE)
+          return 0;
+      }
 
       std::cout << '\n';
     }
