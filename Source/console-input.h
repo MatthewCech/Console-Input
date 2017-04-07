@@ -15,9 +15,15 @@ windows and linux! Relevant functions are KeyHit() and GetKey().
   #define OS_NON_WINDOWS
 #endif
 
+// A few common non-ascii keys - code validity not guarenteed.
+#define KEY_ESCAPE    27
+#define KEY_BACKSPACE 8
+#define KEY_TAB       9
+#define KEY_ENTER     13
+#define KEY_RETURN    13
 
 int KeyHit(void); // Returns truthy if a key was hit.
-int GetKey(void); // Retrieves the last key value pressed.
+int GetChar(void); // Retrieves the last key value pressed.
 
 
   ////////////////////////////
@@ -27,8 +33,8 @@ int GetKey(void); // Retrieves the last key value pressed.
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
 
-int KeyHit(void) { return _kbhit();  }
-int GetKey(void) { return _getch();  }
+int KeyHit(void)  { return _kbhit();  }
+int GetChar(void) { return _getwch();  }
 #endif
 
 
@@ -73,7 +79,7 @@ int KeyHit(void)
   return charCount; 
 }
 
-int GetKey(void) 
+int GetChar(void)
 {
   // Recall: Define variables at the top for C
   struct termios oldTermios; // Save off for previous terminal settings
@@ -91,7 +97,6 @@ int GetKey(void)
   tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);
   return charVal;
 }
-
 
 #endif // OS_NON_WINDOWS
 
