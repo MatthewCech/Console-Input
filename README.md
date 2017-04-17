@@ -3,4 +3,4 @@ Allows for cross-platform reading of keypresses with a simple header file. Conta
 
 #### Building the test
 - Build Test on windows for VS2015 using `Build.bat` or by running `Build/premake5 vs2015`
-- Build on linux with `Build.command` or by running `Build/premake5 gmake`
+- Build on linux with `Build.sh` or by running `Build/premake5 gmake`
