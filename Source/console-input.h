@@ -7,13 +7,14 @@
 A wrapper allowing _getch and _kbhit windows-style functionality on 
 both windows and linux! Relevant functions are KeyHit() and GetKey().
 
-@copyright "Don't be a Jerk" (See LICENSE.md)
+@copyright (See LICENSE.md)
 ************************************************************************/
 #if _WIN32 || WIN32 || WINDOWS || _WIN32_
   #define OS_WINDOWS
 #else
   #define OS_NON_WINDOWS
 #endif
+
 
 
   /////////////////////
@@ -42,11 +43,13 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 #define KEY_NUM_9 57
 
 
+
   /////////////////////////
  // Function Prototypes //
 /////////////////////////
 int KeyHit(void);  // Returns truthy if a key was hit.
 int GetChar(void); // Retrieves the last key value pressed.
+
 
 
   ////////////////////////////
@@ -59,13 +62,15 @@ int GetChar(void); // Retrieves the last key value pressed.
 int KeyHit(void)  { return _kbhit();  }
 int GetChar(void) { return _getwch();  }
 
-#endif
+#endif // OS_WINDOWS
+
 
 
   ////////////////////////////////
  // Non-Windows Implementation //
 ////////////////////////////////
 #ifdef OS_NON_WINDOWS
+
 // System includes, mostly kbhit emulation
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -75,6 +80,7 @@ int GetChar(void) { return _getwch();  }
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+
 
 int KeyHit(void)
 {
