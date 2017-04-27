@@ -9,7 +9,7 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 
 @copyright (See LICENSE.md)
 ************************************************************************/
-#if _WIN32 || WIN32 || WINDOWS || _WIN32_
+#ifdef _WIN32 || WIN32 || WINDOWS || _WIN32_
   #define OS_WINDOWS
 #else
   #define OS_NON_WINDOWS
