@@ -50,11 +50,11 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 // Checks to see if a key was hit in the terminal.
 // Returns truthy if a change was detected in the input
 // queue (if a key was hit), falsy if not.
-int KeyHit(void);  
+inline int KeyHit(void);  
 
 // Gets the last character changed in the terminal.
 // Returns the value of the last character changed.
-int GetChar(void); 
+inline int GetChar(void); 
 
 
 
@@ -66,10 +66,10 @@ int GetChar(void);
 #include <conio.h>     // getch and kbhit
 
 // standard kbhit, returns if character change is queued.
-int KeyHit(void)  { return _kbhit();  }
+inline int KeyHit(void)  { return _kbhit();  }
 
 // Uses wch to handle additional cases.
-int GetChar(void) { return _getwch();  }
+inline int GetChar(void) { return _getwch();  }
 
 #endif // OS_WINDOWS
 
@@ -95,7 +95,7 @@ int GetChar(void) { return _getwch();  }
 // termios reference: http://man7.org/linux/man-pages/man3/termios.3.html
 // More readable termios reference: https://www.mkssoftware.com/docs/man5/struct_termios.5.asp
 // select reference: http://man7.org/linux/man-pages/man2/select.2.html
-int KeyHit(void)
+inline int KeyHit(void)
 {
   // Recall: Define variables at the top for C
   static struct termios oldTermios; // Save off for previous terminal settings
@@ -131,7 +131,7 @@ int KeyHit(void)
 // getchar documentation: https://linux.die.net/man/3/getchar
 // If called without a character waiting for reading, 
 // you should recieve EOF.
-int GetChar(void)
+inline int GetChar(void)
 {
   // Recall: Define variables at the top for C
   struct termios oldTermios; // Save off for previous terminal settings
