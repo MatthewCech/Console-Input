@@ -47,8 +47,14 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
   /////////////////////////
  // Function Prototypes //
 /////////////////////////
-int KeyHit(void);  // Returns truthy if a key was hit.
-int GetChar(void); // Retrieves the last key value pressed.
+// Checks to see if a key was hit in the terminal.
+// Returns truthy if a change was detected in the input
+// queue (if a key was hit), falsy if not.
+int KeyHit(void);  
+
+// Gets the last character changed in the terminal.
+// Returns the value of the last character changed.
+int GetChar(void); 
 
 
 
@@ -59,7 +65,10 @@ int GetChar(void); // Retrieves the last key value pressed.
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
 
+// standard kbhit, returns if character change is queued.
 int KeyHit(void)  { return _kbhit();  }
+
+// Uses wch to handle additional cases.
 int GetChar(void) { return _getwch();  }
 
 #endif // OS_WINDOWS
@@ -82,6 +91,10 @@ int GetChar(void) { return _getwch();  }
 #include <unistd.h>
 
 
+
+// termios reference: http://man7.org/linux/man-pages/man3/termios.3.html
+// More readable termios reference: https://www.mkssoftware.com/docs/man5/struct_termios.5.asp
+// select reference: http://man7.org/linux/man-pages/man2/select.2.html
 int KeyHit(void)
 {
   // Recall: Define variables at the top for C
@@ -90,24 +103,34 @@ int KeyHit(void)
   struct timeval tv;                // Timeval struct for small delays.
   int charCount = 0;                // Character count
 
+  // Set up console.
   tcgetattr(STDIN_FILENO, &oldTermios);           // Get old settings
   newTermios = oldTermios;                        // Transfer previous settings
   newTermios.c_oflag = 0;                         // Output mode
-  newTermios.c_lflag &= ~(ICANON | ECHO);         // Set new print flags
+  newTermios.c_lflag &= ~(ICANON | ECHO);         // Jupt straight to the queue and don't echo.
   newTermios.c_iflag = 0;                         // Input mode
   newTermios.c_cc[VMIN] = 1;                      // Minimum time to wait
   newTermios.c_cc[VTIME] = 1;                     // Minimum characters to wait for
   tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);  // Set newTermios
-  ioctl(0, FIONREAD, &charCount);                 // Read number of characters
-  tv.tv_sec = 0;    // time to delay, in Seconds.
-  tv.tv_usec = 100; // time to delay, in Microseconds
-
+  
+  // Not checking return values, because if you're having issues with 
+  // accessing the stack or reading information from the stream, you
+  // likely have bigger issues than this function not working.
+  ioctl(0, FIONREAD, &charCount);            
+  
   // Check file stream with a small delay, then return to previous state.
+  tv.tv_sec = 0;     // time to delay, in Seconds.
+  tv.tv_usec = 100;  // time to delay, in Microseconds
   select(STDIN_FILENO + 1, NULL, NULL, NULL, &tv); 
   tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);
   return charCount; 
 }
 
+// makes use of the getchar function. Effectively getc(stdin), 
+// with quick tweaks to the terminal to prevent oops.
+// getchar documentation: https://linux.die.net/man/3/getchar
+// If called without a character waiting for reading, 
+// you should recieve EOF.
 int GetChar(void)
 {
   // Recall: Define variables at the top for C
