@@ -3,25 +3,28 @@
 @author  rwmc
 @date    5/4/2016
 
-@brief 
-A wrapper allowing _getch and _kbhit windows-style functionality on 
+@brief
+A wrapper allowing _getch and _kbhit windows-style functionality on
 both windows and linux! Relevant functions are KeyHit() and GetKey().
 
 @copyright (See LICENSE.md)
 ************************************************************************/
 #if defined(_WIN32) || defined(WIN32) || defined(WINDOWS) || defined(_WIN32_)
-  #define OS_WINDOWS
+#define OS_WINDOWS
 #else
-  #define OS_NON_WINDOWS
+#define OS_NON_WINDOWS
 #endif
 
 
 
-  /////////////////////
- // Keycode Defines //
+/////////////////////
+// Keycode Defines //
 /////////////////////
 // Accuracy not guarenteed. Use ASCII characters when possible instead.
 // Keycodes based on ASCII Values, and ASCII Scan codes.
+// http://www.asciitable.com/
+//
+// Provided main can be used to test as well.
 
 // Main board keys
 #define KEY_BACKSPACE 8
@@ -75,39 +78,39 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 
 
 
-  /////////////////////////
- // Function Prototypes //
+/////////////////////////
+// Function Prototypes //
 /////////////////////////
 // Checks to see if a key was hit in the terminal.
 // Returns truthy if a change was detected in the input
 // queue (if a key was hit), falsy if not.
-inline int KeyHit(void);  
+inline int KeyHit(void);
 
 // Gets the last character changed in the terminal.
 // Returns the value of the last character changed.
-inline int GetChar(void); 
+inline int GetChar(void);
 
 
 
-  ////////////////////////////
- // Windows Implementation //
+////////////////////////////
+// Windows Implementation //
 ////////////////////////////
 #ifdef OS_WINDOWS
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
 
 // standard kbhit, returns if character change is queued.
-inline int KeyHit(void)  { return _kbhit();  }
+inline int KeyHit(void) { return _kbhit(); }
 
 // Uses wch to handle additional cases.
-inline int GetChar(void) { return _getwch();  }
+inline int GetChar(void) { return _getwch(); }
 
 #endif // OS_WINDOWS
 
 
 
-  ////////////////////////////////
- // Non-Windows Implementation //
+////////////////////////////////
+// Non-Windows Implementation //
 ////////////////////////////////
 #ifdef OS_NON_WINDOWS
 
@@ -134,7 +137,7 @@ inline int KeyHit(void)
   struct timeval tv;                // Timeval struct for small delays.
   int charCount = 0;                // Character count
 
-  // Set up console.
+                                    // Set up console.
   tcgetattr(STDIN_FILENO, &oldTermios);           // Get old settings
   newTermios = oldTermios;                        // Transfer previous settings
   newTermios.c_oflag = 0;                         // Output mode
@@ -143,18 +146,18 @@ inline int KeyHit(void)
   newTermios.c_cc[VMIN] = 1;                      // Minimum time to wait
   newTermios.c_cc[VTIME] = 1;                     // Minimum characters to wait for
   tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);  // Set newTermios
-  
+
   // Not checking return values, because if you're having issues with 
   // accessing the stack or reading information from the stream, you
   // likely have bigger issues than this function not working.
-  ioctl(0, FIONREAD, &charCount);            
-  
+  ioctl(0, FIONREAD, &charCount);
+
   // Check file stream with a small delay, then return to previous state.
   tv.tv_sec = 0;     // time to delay, in Seconds.
   tv.tv_usec = 100;  // time to delay, in Microseconds
-  select(STDIN_FILENO + 1, NULL, NULL, NULL, &tv); 
+  select(STDIN_FILENO + 1, NULL, NULL, NULL, &tv);
   tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);
-  return charCount; 
+  return charCount;
 }
 
 // makes use of the getchar function. Effectively getc(stdin), 
