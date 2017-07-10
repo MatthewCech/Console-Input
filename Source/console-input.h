@@ -9,6 +9,7 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 
 @copyright (See LICENSE.md)
 ************************************************************************/
+// Ease of use OS specific defines for compiling
 #if defined(_WIN32) || defined(WIN32) || defined(WINDOWS) || defined(_WIN32_)
 #define OS_WINDOWS
 #else
@@ -137,7 +138,7 @@ inline int KeyHit(void)
   struct timeval tv;                // Timeval struct for small delays.
   int charCount = 0;                // Character count
 
-                                    // Set up console.
+  // Set up the console.
   tcgetattr(STDIN_FILENO, &oldTermios);           // Get old settings
   newTermios = oldTermios;                        // Transfer previous settings
   newTermios.c_oflag = 0;                         // Output mode
@@ -160,7 +161,7 @@ inline int KeyHit(void)
   return charCount;
 }
 
-// makes use of the getchar function. Effectively getc(stdin), 
+// Makes use of the getchar function. Effectively getc(stdin), 
 // with quick tweaks to the terminal to prevent oops.
 // getchar documentation: https://linux.die.net/man/3/getchar
 // If called without a character waiting for reading, 
