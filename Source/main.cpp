@@ -7,7 +7,7 @@
 Testing main for the console-input.h file. A reasonable reference for 
 using this application on a few different systems.
 
-@copyright "Don't be a Jerk" (See LICENSE.md)
+@copyright See LICENSE.md
 ************************************************************************/
 #include <iostream>        // std::cout
 #include "console-input.h" // KeyHit() and GetKey()
@@ -20,8 +20,10 @@ int main(int argc, char** argv)
   // Print things that are sent to console.
   while (true)
   {
-    if (int num = KeyHit())
+    int num = KeyHit();
+    if (num > 0)
     {
+      // Count down to handle wide characters, or multi-character input.
       while (num--)
       {
         int lastCode = GetChar();
