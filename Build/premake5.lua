@@ -25,17 +25,17 @@ workspace "Console Input"                    -- Solution Name
 
     -- Generate filters with info provided for Visual Studio
     filter { "platforms:*86" }
-      architecture "x86"
+        architecture "x86"
     filter { "platforms:*64" }
-      architecture "x64"
+        architecture "x64"
 
     -- Generate configs dropdown info, VS
     filter { "configurations:Debug" }
-      defines { "DEBUG" }  -- Actively defined in code, can be checked for.
-      flags { "Symbols" }
+        defines { "DEBUG" }  -- Actively defined in code, can be checked for.
+        symbols "On"
     filter { "configurations:Release" }
-      defines { "NDEBUG" } -- Actively defined in code, can be checked for.
-      optimize "On"
+        defines { "NDEBUG" } -- Actively defined in code, can be checked for.
+        optimize "On"
 
     filter {} -- Reset filter.
 
@@ -43,20 +43,19 @@ workspace "Console Input"                    -- Solution Name
     local cur_toolset = "default" -- workaround for premake issue #257
 
     filter {"system:macosx" } -- Mac uses clang.
-      toolset "clang"
-      cur_toolset = "clang"
+        toolset "clang"
    
     filter { "action:gmake" }
-      buildoptions { "-std=c++14" }
+        buildoptions { "-std=c++14" }
 
     -- Set the rpath on the executable, to allow for relative path for dynamic lib
-    filter { "system:macosx" }
-      if cur_toolset == "clang" or cur_toolset == "gcc" then  
+    filter { "system:macosx", "toolset:clang or gcc" }
         linkoptions { "-rpath @executable_path/lib" }
-      end
     
     filter {"system:windows", "action:vs*"}
-      linkoptions   { "/ignore:4099" }      -- Ignore library pdb warnings when running in debug
+        linkoptions   { "/ignore:4099" }      -- Ignore library pdb warnings when running in debug
+        systemversion("10.0.15063.0")         -- windows 10 SDK
+
 
     filter {} -- clear filter   
 
@@ -78,7 +77,7 @@ workspace "Console Input"                    -- Solution Name
 
     -- Omit templates from visual studio
     filter { "files:**.tpp" }
-      flags {"ExcludeFromBuild"}
+        flags {"ExcludeFromBuild"}
     filter {}
 
     -- Ignore files for other operating systems (not necessary in this project)
