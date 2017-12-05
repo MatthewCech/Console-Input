@@ -103,8 +103,9 @@ inline int GetChar(void);
 // standard kbhit, returns if character change is queued.
 inline int KeyHit(void) { return _kbhit(); }
 
-// Uses wch to handle additional cases.
-inline int GetChar(void) { return _getwch(); }
+// Uses getch as a sandard, supporting commonly typed console characters.
+// Use wch to handle additional cases if you wish, tho know it changes codes.
+inline int GetChar(void) { return _getch(); }
 
 #endif // OS_WINDOWS
 
