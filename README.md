@@ -6,11 +6,27 @@ Allows for cross-platform reading of keypresses with a simple header file. Conta
 
 #### Building the example
 - Build on *nix with `Build.sh` or by running `Build/premake5 gmake`
-- Build Test on windows for VS2015 using `Build.bat` or by running `Build/premake5 vs2015`
+- Build Test on windows for VS2017 using `Build.bat` or by running `Build/premake5 vs2017`
 - If you think all of that is a bit much, you can just use the command line `g++ main.cpp -o example`.
 
 #### Usage
 - Just copy `console-input.h` into your project directory, and include it with `#include "console-input.h"`
 - Check if a key was hit with `KeyHit()`, Get the key in question with `GetChar()`
-- Works in C and C++
+- Works in C++, but C support will be coming soon.
 
+#### Sample Code
+```c++
+#include <stdio.h>
+#include "console-input.h"
+
+int main(void)
+{
+  while(true)
+  {
+    if(KeyHit())
+      printf("Key %c was pressed!", GetChar());
+  }
+  
+  return 0;
+}
+```
