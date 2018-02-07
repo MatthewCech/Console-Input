@@ -118,7 +118,7 @@ inline int GetChar(void) { return _getch(); }
 
 
 // Drag-in parser 
-class DraginParser
+class InputParser
 {
 public:
   // Handle the input parsing and separation. This requires 
@@ -126,12 +126,18 @@ public:
   void HandleInput(std::function<void(char)> callbackSingleChar, std::function<void(std::string) > callbackFilepath)
   {
     int hit = KeyHit();
+    
+    // If there was a hit key, keep track of it.
+    // If a combination shows up, handle that as well.
     if (hit)
       do
       {
         lastChar_ = GetChar();
         buffer_ += lastChar_;
       } while (hit = KeyHit());
+    
+    // If there is currently not a hit key but there was one 
+    // last cycle when we checked...
     else
       if (lastChar_ != NoInput)
       {
@@ -145,7 +151,7 @@ public:
       }
   }
 
-  // A member-function supprted version of the previous function.
+  // A member-function supported version of the previous function.
   // Uses the same variables as the other HandleInput function.
   template <class T> void HandleInput(T *thisClass, void(T::*callbackSingleChar)(char), void(T::*callbackFilepath)(std::string))
   {
@@ -172,9 +178,9 @@ public:
 
 private:
   // Variables
-  const int NoInput = 0;
-  int lastChar_ = NoInput;
-  std::string buffer_ = "";
+  const int NoInput = 0;    // A constant for defining a lack of input. 
+  int lastChar_ = NoInput;  // The last character we read. NoInput by default.
+  std::string buffer_ = ""; // So long as we recieve input without a break, we continue to store it here.
 
 };
 
