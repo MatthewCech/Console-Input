@@ -1,6 +1,6 @@
 /*!**********************************************************************
 @file    console-input.h
-@author  rwmc
+@author  rMC
 @date    5/4/2016
 
 @brief
@@ -97,8 +97,17 @@ inline int GetChar(void);
 // Windows Implementation //
 ////////////////////////////
 #ifdef OS_WINDOWS
+
+// For KeyHit and GetChar
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
+
+// For input polling class
+#include <string>                       // std::string
+#include <functional>                   // std::function
+#include <ConsoleInput/console-input.h> // KeyHit, GetChar
+
+
 
 // standard kbhit, returns if character change is queued.
 inline int KeyHit(void) { return _kbhit(); }
@@ -106,6 +115,68 @@ inline int KeyHit(void) { return _kbhit(); }
 // Uses getch as a sandard, supporting commonly typed console characters.
 // Use wch to handle additional cases if you wish, tho know it changes codes.
 inline int GetChar(void) { return _getch(); }
+
+
+// Drag-in parser 
+class DraginParser
+{
+public:
+  // Handle the input parsing and separation. This requires 
+  // references as inputs for keeping track of keypresses.
+  void HandleInput(std::function<void(char)> callbackSingleChar, std::function<void(std::string) > callbackFilepath)
+  {
+    int hit = KeyHit();
+    if (hit)
+      do
+      {
+        lastChar_ = GetChar();
+        buffer_ += lastChar_;
+      } while (hit = KeyHit());
+    else
+      if (lastChar_ != NoInput)
+      {
+        if (buffer_.size() > 1)
+          callbackFilepath(buffer_);
+        else
+          callbackSingleChar(lastChar_);
+
+        lastChar_ = NoInput;
+        buffer_.clear();
+      }
+  }
+
+  // A member-function supprted version of the previous function.
+  // Uses the same variables as the other HandleInput function.
+  template <class T> void HandleInput(T *thisClass, void(T::*callbackSingleChar)(char), void(T::*callbackFilepath)(std::string))
+  {
+    int hit = KeyHit();
+    if (hit)
+      do
+      {
+        lastChar_ = GetChar();
+        buffer_ += lastChar_;
+      } while (hit = KeyHit());
+    else
+      if (lastChar_ != NoInput)
+      {
+        if (buffer_.size() > 1)
+          (*thisClass.*callbackFilepath)(buffer_);
+        else
+          (*thisClass.*callbackSingleChar)(lastChar_);
+
+        lastChar_ = NoInput;
+        buffer_.clear();
+      }
+  }
+
+
+private:
+  // Variables
+  const int NoInput = 0;
+  int lastChar_ = NoInput;
+  std::string buffer_ = "";
+
+};
 
 #endif // OS_WINDOWS
 
@@ -187,3 +258,4 @@ inline int GetChar(void)
 }
 
 #endif // OS_NON_WINDOWS
+
