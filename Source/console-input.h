@@ -106,10 +106,6 @@ inline int GetChar(void);
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
 
-// For input polling class
-#include <string>                       // std::string
-#include <functional>                   // std::function
-
 
 
 // standard kbhit, returns if character change is queued.
@@ -120,7 +116,10 @@ inline int KeyHit(void) { return _kbhit(); }
 inline int GetChar(void) { return _getch(); }
 
 
-#ifdef LANGUAGE_C
+#ifdef LANGUAGE_CPP
+#include <string>     // std::string
+#include <functional> // std::function
+
 // Drag-in parser 
 class InputParser
 {
@@ -188,7 +187,7 @@ private:
 
 };
 #endif // LANGUAGE_CPP
-#ifdef LANGUAGE_CPP
+#ifdef LANGUAGE_C
 
 // Global internal variables for C
 int ci_internal_last_char_ = 0;
