@@ -187,23 +187,19 @@ private:
   std::string buffer_ = ""; // So long as we recieve input without a break, we continue to store it here.
 
 };
-#endif
+#endif // LANGUAGE_CPP
 #ifdef LANGUAGE_CPP
-// C headers for memory management
-#include <stdlib.h>
 
-// Global internal variables
+// Global internal variables for C
 int ci_internal_last_char_ = 0;
 int ci_internal_buffer_pos_ = 0;
-char * ci_internal_buffer_ = 0;
+const int buffer_max = 255;
+char ci_internal_buffer_[buffer_max] = {};
 
 // Callback functions specified as necessary.
 void HandleInput(void(callbackSingleChar)(char), void(callbackFilepath)(const char *, int))
 {
   int hit = KeyHit();
-  const int buffer_max = 255;
-
-  ci_internal_buffer_ = (char *)malloc(buffer_max * sizeof(char));
 
   // If there was a hit key, keep track of it.
   // If a combination shows up, handle that as well.
@@ -232,11 +228,8 @@ void HandleInput(void(callbackSingleChar)(char), void(callbackFilepath)(const ch
       ci_internal_buffer_pos_ = 0;
       memset(ci_internal_buffer_, 0, buffer_max);
     }
-
-  free(ci_internal_buffer_);
-  ci_internal_buffer_ = 0;
 }
-#endif
+#endif // LANGUAGE_C
 #endif // OS_WINDOWS
 
 
