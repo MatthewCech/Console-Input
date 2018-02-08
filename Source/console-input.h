@@ -15,7 +15,11 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 #else
 #define OS_NON_WINDOWS
 #endif
-
+#ifdef __cplusplus
+#define LANGUAGE_CPP
+#else
+#define LANGUAGE_C
+#endif
 
 
 /////////////////////
@@ -102,11 +106,6 @@ inline int GetChar(void);
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
 
-// For input polling class
-#include <string>                       // std::string
-#include <functional>                   // std::function
-#include <ConsoleInput/console-input.h> // KeyHit, GetChar
-
 
 
 // standard kbhit, returns if character change is queued.
@@ -116,6 +115,10 @@ inline int KeyHit(void) { return _kbhit(); }
 // Use wch to handle additional cases if you wish, tho know it changes codes.
 inline int GetChar(void) { return _getch(); }
 
+
+#ifdef LANGUAGE_CPP
+#include <string>     // std::string
+#include <functional> // std::function
 
 // Drag-in parser 
 class InputParser
@@ -183,7 +186,49 @@ private:
   std::string buffer_ = ""; // So long as we recieve input without a break, we continue to store it here.
 
 };
+#endif // LANGUAGE_CPP
+#ifdef LANGUAGE_C
 
+// Global internal variables for C
+int ci_internal_last_char_ = 0;
+int ci_internal_buffer_pos_ = 0;
+const int buffer_max = 255;
+char ci_internal_buffer_[buffer_max] = {};
+
+// Callback functions specified as necessary.
+void HandleInput(void(callbackSingleChar)(char), void(callbackFilepath)(const char *, int))
+{
+  int hit = KeyHit();
+
+  // If there was a hit key, keep track of it.
+  // If a combination shows up, handle that as well.
+  if (hit)
+    do
+    {
+      ci_internal_last_char_ = GetChar();
+      ci_internal_buffer_[ci_internal_buffer_pos_] = (char)ci_internal_last_char_;
+
+      if (ci_internal_buffer_pos_ < buffer_max)
+        ++ci_internal_buffer_pos_;
+
+    } while (hit = KeyHit());
+
+  // If there is currently not a hit key but there was one 
+  // last cycle when we checked...
+  else
+    if (ci_internal_last_char_ != 0)
+    {
+      if (ci_internal_buffer_pos_ > 1)
+        callbackFilepath(ci_internal_buffer_, ci_internal_buffer_pos_);
+      else
+        callbackSingleChar(ci_internal_last_char_);
+
+      ci_internal_last_char_ = 0;
+      ci_internal_buffer_pos_ = 0;
+      memset(ci_internal_buffer_, 0, buffer_max);
+    }
+}
+#endif // LANGUAGE_C
 #endif // OS_WINDOWS
 
 
