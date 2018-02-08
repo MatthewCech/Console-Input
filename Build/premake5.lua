@@ -1,3 +1,11 @@
+-- helper to get windows sdk version
+function os.winSdkVersion()
+  local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
+  local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
+  if sdk_version ~= nil then return sdk_version end
+end
+
+
 -- Premake5 Wiki: https://github.com/premake/premake-core/wiki
 -- Based on Premake GLFW demo courtesy of JohannesMP
 -- https://github.com/JohannesMP
@@ -40,7 +48,6 @@ workspace "Console Input"                    -- Solution Name
     filter {} -- Reset filter.
 
     -- [ BUILD CONFIGURATIONS ] --
-    local cur_toolset = "default" -- workaround for premake issue #257
 
     filter {"system:macosx" } -- Mac uses clang.
         toolset "clang"
@@ -54,16 +61,18 @@ workspace "Console Input"                    -- Solution Name
     
     filter {"system:windows", "action:vs*"}
         linkoptions   { "/ignore:4099" }      -- Ignore library pdb warnings when running in debug
-        systemversion("10.0.15063.0")         -- windows 10 SDK
-
+        systemversion(os.winSdkVersion() .. ".0") -- windows SDK
 
     filter {} -- clear filter   
 
 
     -- [ FILE PATH CONFIGURATIONS ] --
     local output_dir_root         = ROOT .. "bin_%{cfg.platform}_%{cfg.buildcfg}_" .. _ACTION
+    local output_dir_lib          = output_dir_root .. "/libs" -- Mac Specific
     targetdir(output_dir_root)    -- Where all output files are stored
     local source_dir_root         = ROOT .. "Source"
+    local source_dir_includes     = ROOT .. "External" .. "/**/Includes"
+    local source_dir_libs         = ROOT .. "External" .. "/**/" .. "Libs_" .. os.target()
 
     -- Files to be compiled (cpp) or added to project (visual studio)
     files
@@ -77,7 +86,7 @@ workspace "Console Input"                    -- Solution Name
 
     -- Omit templates from visual studio
     filter { "files:**.tpp" }
-        flags {"ExcludeFromBuild"}
+      flags {"ExcludeFromBuild"}
     filter {}
 
     -- Ignore files for other operating systems (not necessary in this project)
@@ -99,4 +108,26 @@ workspace "Console Input"                    -- Solution Name
           source_dir_root .. "**.tpp"
         },
       ["Docs"] = "**.txt"
+    }
+
+    -- Where compiler should look for library includes
+    -- NOTE: for library headers always use  '#include <LIB/lib.hpp>' not quotes
+    -- The LIB folder is an additional step to be added manually, creating an effective namespace.
+    -- This prevents silly name overlapt, which we don't want to happen.
+    includedirs
+    {
+      source_dir_includes,
+      source_dir_root
+    }
+    
+
+    -- Where linker should look for library files
+    -- NOTE: currently each library must have "LIBS_<OS>" in its path.
+    libdirs
+    {
+      source_dir_libs,                                           -- default: look for any libs here (does not recurse)
+      source_dir_libs .. "/lib_%{cfg.platform}",                 -- libs with ONLY x32/x64 (no Release/Debug) versions
+      source_dir_libs .. "/%{cfg.buildcfg}",                     -- libs with ONLY Release/Debug (no x32/x64) versions
+      source_dir_libs .. "/%{cfg.buildcfg}/lib_%{cfg.platform}", -- libs with BOTH Release/Debug AND x32/x64 versions
+      source_dir_libs .. "/lib_%{cfg.platform}/%{cfg.buildcfg}"  -- libs with BOTH x32/x64 AND Release/Debug versions (order reversed)
     }
