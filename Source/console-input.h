@@ -1,11 +1,19 @@
 /*!**********************************************************************
 @file    console-input.h
-@author  MC
-@date    5/4/2016
+@author  Matthew C.
+@author  JohannesMP
+@author  R.W.
+
+@date    2/8/2018
 
 @brief
 A wrapper allowing _getch and _kbhit windows-style functionality on
 both windows and linux! Relevant functions are KeyHit() and GetKey().
+
+Includes some utilities for reading paths vs single key inputs as well.
+Depending on C vs C++ usage, either the InputParser class will be 
+available for C++, or for C there is a HandleInput method. All take
+callbacks to functions, passing the input as acquired.
 
 @copyright (See LICENSE.md)
 ************************************************************************/
@@ -83,6 +91,8 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 
 
 
+
+
 /////////////////////////
 // Function Prototypes //
 /////////////////////////
@@ -97,15 +107,14 @@ inline int GetChar(void);
 
 
 
+
+
 ////////////////////////////
 // Windows Implementation //
 ////////////////////////////
 #ifdef OS_WINDOWS
-
-// For KeyHit and GetChar
 #define _NO_OLDNAMES   // for MinGW
 #include <conio.h>     // getch and kbhit
-
 
 
 // standard kbhit, returns if character change is queued.
@@ -116,6 +125,7 @@ inline int KeyHit(void) { return _kbhit(); }
 inline int GetChar(void) { return _getch(); }
 
 
+// C++ Specific additional functionality
 #ifdef LANGUAGE_CPP
 #include <string>     // std::string
 #include <functional> // std::function
@@ -187,6 +197,8 @@ private:
 
 };
 #endif // LANGUAGE_CPP
+
+// Additional functionality for C
 #ifdef LANGUAGE_C
 
 // Global internal variables for C
@@ -230,6 +242,8 @@ void HandleInput(void(callbackSingleChar)(char), void(callbackFilepath)(const ch
 }
 #endif // LANGUAGE_C
 #endif // OS_WINDOWS
+
+
 
 
 
