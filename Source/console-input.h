@@ -15,7 +15,11 @@ both windows and linux! Relevant functions are KeyHit() and GetKey().
 #else
 #define OS_NON_WINDOWS
 #endif
-
+#ifdef __cplusplus
+#define LANGUAGE_CPP
+#else
+#define LANGUAGE_C
+#endif
 
 
 /////////////////////
@@ -105,7 +109,6 @@ inline int GetChar(void);
 // For input polling class
 #include <string>                       // std::string
 #include <functional>                   // std::function
-#include <ConsoleInput/console-input.h> // KeyHit, GetChar
 
 
 
@@ -117,6 +120,7 @@ inline int KeyHit(void) { return _kbhit(); }
 inline int GetChar(void) { return _getch(); }
 
 
+#ifdef LANGUAGE_C
 // Drag-in parser 
 class InputParser
 {
@@ -183,7 +187,56 @@ private:
   std::string buffer_ = ""; // So long as we recieve input without a break, we continue to store it here.
 
 };
+#endif
+#ifdef LANGUAGE_CPP
+// C headers for memory management
+#include <stdlib.h>
 
+// Global internal variables
+int ci_internal_last_char_ = 0;
+int ci_internal_buffer_pos_ = 0;
+char * ci_internal_buffer_ = 0;
+
+// Callback functions specified as necessary.
+void HandleInput(void(callbackSingleChar)(char), void(callbackFilepath)(const char *, int))
+{
+  int hit = KeyHit();
+  const int buffer_max = 255;
+
+  ci_internal_buffer_ = (char *)malloc(buffer_max * sizeof(char));
+
+  // If there was a hit key, keep track of it.
+  // If a combination shows up, handle that as well.
+  if (hit)
+    do
+    {
+      ci_internal_last_char_ = GetChar();
+      ci_internal_buffer_[ci_internal_buffer_pos_] = (char)ci_internal_last_char_;
+
+      if (ci_internal_buffer_pos_ < buffer_max)
+        ++ci_internal_buffer_pos_;
+
+    } while (hit = KeyHit());
+
+  // If there is currently not a hit key but there was one 
+  // last cycle when we checked...
+  else
+    if (ci_internal_last_char_ != 0)
+    {
+      if (ci_internal_buffer_pos_ > 1)
+        callbackFilepath(ci_internal_buffer_, ci_internal_buffer_pos_);
+      else
+        callbackSingleChar(ci_internal_last_char_);
+
+      ci_internal_last_char_ = 0;
+      ci_internal_buffer_pos_ = 0;
+      memset(ci_internal_buffer_, 0, buffer_max);
+    }
+
+  free(ci_internal_buffer_);
+  ci_internal_buffer_ = 0;
+}
+#endif
 #endif // OS_WINDOWS
 
 

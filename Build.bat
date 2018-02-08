@@ -11,7 +11,7 @@ echo.
 echo -- [ BUILDING ] --
 cd Build
 echo Building...
-call build_vs2015.bat
+call build_vs2017.bat
 
 echo.
 echo.

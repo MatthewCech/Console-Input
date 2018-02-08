@@ -10,12 +10,12 @@ using this application on a few different systems.
 @copyright See LICENSE.md
 ************************************************************************/
 #include <iostream>        // std::cout
-#include "console-input.h" // KeyHit() and GetKey()
+#include "console-input.h" // KeyHit() and GetKey() and others
 
 
 
-// Application entry point
-int main(int argc, char** argv)
+// Base functionality
+void Test_BaseFunctionality()
 {
   // Print things that are sent to console.
   while (true)
@@ -30,12 +30,30 @@ int main(int argc, char** argv)
         std::cout << "Read Code: " << lastCode << ", Char: " << static_cast<char>(lastCode);
 
         if (lastCode == KEY_ESCAPE)
-          return 0;
+          return;
       }
 
       std::cout << '\n';
     }
   }
+}
 
+// 
+void OnChar(char c)
+{
+  std::cout << "Character hit: " << c << '\n';
+}
+
+void OnPath(const char* path, int len)
+{
+  std::cout << "C test path was just recieved! " << std::string(path, len) << '\n';
+}
+
+// Application entry point
+int main(int argc, char** argv)
+{
+  //Test_BaseFunctionality();
+  while(1)
+    HandleInput(OnChar, OnPath);
   return 0;
 }
