@@ -18,21 +18,21 @@ using this application on a few different systems.
  // Setup Functions and Objects //
 /////////////////////////////////
 // Test functions to bind to.
-void OnChar(char c) { std::cout << "Character hit: " << c << '\n'; }
-void OnPathC(const char* path, int len) { std::cout << "C test path was just recieved! " << std::string(path, len) << '\n'; }
-void OnPathCPP(std::string s) { std::cout << "Cpp test path was just recieved! " << s << '\n'; }
+void LangCSingleChar(const char* path, int len) { std::cout << "C multi characters recieved! " << std::string(path, len) << '\n'; }
+void LangCPPSingleChar(char c) { std::cout << "Character hit: " << c << '\n'; }
+void LangCPPMultiChar(std::string s) { std::cout << "Cpp multi characters recieved! " << s << '\n'; }
 
 // A class to test member function callbacks
 class TestClass
 {
   InputParser p_;
-  void MemFunOnChar(char c) { std::cout << "Character hit from inside a class!: " << c << '\n'; }
-  void MemFunOnPath(std::string s) { std::cout << "Got a path inside a class! It was: " << s << '\n'; }
+  void MemFuncCharSingle(char c) { std::cout << "Character hit from inside a class!: " << c << '\n'; }
+  void MemFuncCharMultiple(std::string s) { std::cout << "Got what could be a path, or several inputs from inside a class!\n  It was: " << s << '\n'; }
 
 public:
   void Test_CassFunctionality() 
   { 
-    p_.HandleInput(this, &TestClass::MemFunOnChar, &TestClass::MemFunOnPath); 
+    p_.HandleInput(this, &TestClass::MemFuncCharSingle, &TestClass::MemFuncCharMultiple);
   }
 };
 
@@ -71,7 +71,7 @@ void Test_GlobalFunctionality()
   InputParser ip;
 
   while (true)
-    ip.HandleInput(OnChar, OnPathCPP);
+    ip.HandleInput(LangCPPSingleChar, LangCPPMultiChar);
 }
 
 // Tests to see if member functions in classes can act as callbacks
