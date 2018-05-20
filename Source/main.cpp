@@ -30,7 +30,10 @@ class TestClass
   void MemFunOnPath(std::string s) { std::cout << "Got a path inside a class! It was: " << s << '\n'; }
 
 public:
-  void Test_CassFunctionality() { p_.HandleInput(this, &TestClass::MemFunOnChar, &TestClass::MemFunOnPath); }
+  void Test_CassFunctionality() 
+  { 
+    p_.HandleInput(this, &TestClass::MemFunOnChar, &TestClass::MemFunOnPath); 
+  }
 };
 
 
