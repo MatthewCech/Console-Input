@@ -1,5 +1,5 @@
 # Console-Input
-Allows for cross-platform reading of keypresses with a simple header file. Contains a very small test application to print out the key code of a given key and the character for it. Nothing has to be built - the file you are looking for is `console-input.h` in the Source folder. Designed to handle single and word parsing for things like drag-in, and provides a small class for use with member function or global function callback on input.
+Allows for cross-platform reading of keypresses with a simple header file. Contains a very small test application to print out the key code of a given key and the character for it. Nothing has to be built - the file you are looking for is `console-input.h` in the Source folder. Designed to handle single item and string parsing for things like drag-in, and provides a small utility class for use with member function or global function callback on input.
 
 #### What to use
 - There is a single file, `console-input.h`, that can be found in the source folder. All you need to do is include this in a project!
